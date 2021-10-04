@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
+using UnityEngine.EventSystems;
+
 /// <summary>
 /// Moves the ARSessionOrigin in such a way that it makes the given content appear to be
 /// at a given location acquired via a raycast.
@@ -51,21 +53,30 @@ public class MakeAppearOnPlane : MonoBehaviour
 
     void Update()
     {
-        if (Input.touchCount == 0 || m_Content == null)
-            return;
-
-        var touch = Input.GetTouch(0);
-
-        if (m_RaycastManager.Raycast(touch.position, s_Hits, TrackableType.PlaneWithinPolygon))
+        if (!KyleEditor.isMOPdisabled)
         {
-            // Raycast hits are sorted by distance, so the first one
-            // will be the closest hit.
-            var hitPose = s_Hits[0].pose;
+            if (Input.touchCount == 0 || m_Content == null)
+                return;
 
-            // This does not move the content; instead, it moves and orients the ARSessionOrigin
-            // such that the content appears to be at the raycast hit position.
-            m_SessionOrigin.MakeContentAppearAt(content, hitPose.position, m_Rotation);
-        }
+            var touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                {
+                    if (m_RaycastManager.Raycast(touch.position, s_Hits, TrackableType.PlaneWithinPolygon))
+                    {
+                        // Raycast hits are sorted by distance, so the first one
+                        // will be the closest hit.
+                        var hitPose = s_Hits[0].pose;
+
+                        // This does not move the content; instead, it moves and orients the ARSessionOrigin
+                        // such that the content appears to be at the raycast hit position.
+                        m_SessionOrigin.MakeContentAppearAt(content, hitPose.position, m_Rotation);
+                    }
+                }
+            }
+        }        
     }
 
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
