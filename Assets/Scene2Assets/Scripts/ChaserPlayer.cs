@@ -7,7 +7,7 @@ public class ChaserPlayer : MonoBehaviour
 {
     public float speed;
     public float boostPower;
-    public VariableJoystick movementJoystick;
+    public FixedJoystick movementJoystick;
     public FixedJoystick boostJoystick;
     public Rigidbody rb;
     public GameObject boostHitboxObj;
@@ -27,6 +27,9 @@ public class ChaserPlayer : MonoBehaviour
     {
         if (!selfHitBox) { selfHitBox = GetComponent<SphereCollider>(); }
         if (!boostHitbox) { boostHitbox = boostHitboxObj.GetComponent<SphereCollider>(); }
+        movementJoystick = ChaseGameManager.main.movementJoystick;
+        boostJoystick = ChaseGameManager.main.boostJoystick;
+        ChaseGameManager.main._player = this.gameObject;
     }
 
     public void FixedUpdate()

@@ -9,7 +9,7 @@ public class ChaseGameManager : MonoBehaviour
     public static ChaseGameManager main;
 
     [SerializeField]
-    protected GameObject _player;
+    public GameObject _player;
 
     public TMP_Text remaining;
 
@@ -19,13 +19,22 @@ public class ChaseGameManager : MonoBehaviour
 
     public GameObject gameWinScreen;
 
+    public GameObject activeScreen;
+
+    public FixedJoystick movementJoystick;
+    public FixedJoystick boostJoystick;
+
     public int numberOfEnemies = 5;
 
     protected float timer = 30f;
 
-    public bool gameOn = true;
+    public bool gameOn = false;
 
     public Vector3 PlayerPosition { get { return _player.transform.position; } }
+
+    public GameObject ChaseGamePrefab;
+
+    private GameObject ChaseGameRef;
 
     private void Awake()
     {
@@ -69,16 +78,31 @@ public class ChaseGameManager : MonoBehaviour
     {
         gameOn = false;
         gameOverScreen.SetActive(true);
+        activeScreen.SetActive(false);
     }
 
     void GameWin()
     {
         gameOn = false;
         gameWinScreen.SetActive(true);
+        activeScreen.SetActive(false);
     }
 
     public void NewGame()
     {
-        //UnityEngine.SceneManagement.SceneManager.LoadScene("TI_Scene2");
+        Destroy(ChaseGameRef);
+        gameWinScreen.SetActive(false);
+        gameOverScreen.SetActive(false);
+        activeScreen.SetActive(false);
+        timer = 30f;
+        numberOfEnemies = 5;
+        gameOn = false;
+    }
+
+    public void InstantiateGame(Transform contentPos)
+    {
+        ChaseGameRef = Instantiate(ChaseGamePrefab, contentPos);
+        activeScreen.SetActive(true);
+        gameOn = true;
     }
 }

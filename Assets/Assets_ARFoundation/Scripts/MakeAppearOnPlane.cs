@@ -53,7 +53,7 @@ public class MakeAppearOnPlane : MonoBehaviour
 
     void Update()
     {
-        if (!KyleEditor.isMOPdisabled)
+        if (!ChaseGameManager.main.gameOn)
         {
             if (Input.touchCount == 0 || m_Content == null)
                 return;
@@ -62,7 +62,8 @@ public class MakeAppearOnPlane : MonoBehaviour
 
             if (touch.phase == TouchPhase.Began)
             {
-                if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
+                    || (EventSystem.current.IsPointerOverGameObject(touch.fingerId) && !EventSystem.current.currentSelectedGameObject.GetComponent<CanvasRenderer>()))
                 {
                     if (m_RaycastManager.Raycast(touch.position, s_Hits, TrackableType.PlaneWithinPolygon))
                     {
@@ -72,7 +73,10 @@ public class MakeAppearOnPlane : MonoBehaviour
 
                         // This does not move the content; instead, it moves and orients the ARSessionOrigin
                         // such that the content appears to be at the raycast hit position.
+                        ChaseGameManager.main.InstantiateGame(content);
                         m_SessionOrigin.MakeContentAppearAt(content, hitPose.position, m_Rotation);
+                        
+
                     }
                 }
             }
